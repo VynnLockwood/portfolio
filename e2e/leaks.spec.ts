@@ -18,6 +18,9 @@ test("switching 3D / list many times does not grow GPU buffers, workers or wasm 
   const w = await workers(page);
   expect(w.created - w.terminated).toBeLessThanOrEqual(1); // only the live one
   expect(errors).toEqual([]);
+  await toList(page);
+  await page.waitForTimeout(500);
+  await expect(page.getByText("3D could not start")).toHaveCount(0); // leaving 3D on purpose is not an error
 });
 
 test("toggling the role tags quickly leaves no extra GPU buffers and no errors", async ({ page }) => {

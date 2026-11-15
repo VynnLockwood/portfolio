@@ -36,6 +36,8 @@ export const FALLBACK_NOTICE = "3D could not start, showing the list instead.";
 /** Used when WebGL or the WASM core fails: switch to the plain list and say why in one line. */
 export function fallbackToList(): void {
   const s = useUniverse.getState();
+  // Already in the list: the user left 3D on purpose and the worker was torn down, so in-flight calls reject. Not an error.
+  if (s.view === "list") return;
   s.setNotice(FALLBACK_NOTICE);
   s.setView("list");
 }

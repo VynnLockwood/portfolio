@@ -7,9 +7,7 @@ const config: NextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   // Local runs without wasm-pack use a JS stand-in for the wasm package (see README).
-  ...(useStub
-    ? { turbopack: { resolveAlias: { "@wasm/*": "./src/wasm-stub/*" } } }
-    : {}),
+  ...(useStub ? { turbopack: { resolveAlias: { "@wasm/universe_core.js": "./src/wasm-stub/universe_core.js" } } } : {}),
 };
 
 export default config;

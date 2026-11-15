@@ -24,6 +24,11 @@ export function getCore(): CoreApi {
   return core;
 }
 
+/** The current core if one exists. Never starts a worker (the e2e hook uses this). */
+export function peekCore(): CoreApi | null {
+  return core;
+}
+
 /** Tests inject a fake core; `stop` stands in for Worker.terminate. */
 export function setCore(c: CoreApi | null, stop?: () => void): void {
   core = c;
