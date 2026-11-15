@@ -18,7 +18,7 @@
 - Time for animation accumulates `clampDt(dtMs)` (from `src/scene/pathPlayer.ts`), so a hidden tab never jumps.
 - Reduced motion (`prefers-reduced-motion`): no spin, no pulse, no hint fade animation.
 - Labels and hint text meet WCAG AA contrast against their dark pill (`contrastRatio` in `src/data/roles.ts`).
-- Click-opens-repo, role filter, list view, fallback notice and worker/WASM disposal behave exactly as before.
+- Click-opens-repo, role filter, fallback notice and worker/WASM disposal behave as before. The list view is now the default first view; 3D is opt-in.
 - Commits are authored as the repo's configured git user, with no Claude attribution lines.
 
 ## Review Focus
@@ -28,6 +28,8 @@
 - Role filter dims the planet, its ring and its label together.
 - Hint on a touch device, after a window resize, and under reduced motion: it never blocks pointer events and always goes away.
 - Hidden tab then back: spin and sun boil do not jump, and no extra GPU objects exist after many view toggles.
+- First paint of the list view stays instant: no canvas, worker or WASM starts until the visitor asks for 3D.
+- Keyboard and screen reader: the list cards, chips and the 3D button are reachable and named; the disabled 3D button explains why.
 
 ---
 
@@ -108,7 +110,24 @@
 - [ ] **Step 4:** Run `npx vitest run` and `npx tsc --noEmit`. Expected: PASS.
 - [ ] **Step 5: Commit** `feat: body name labels and the zoom and spin hint`.
 
-### Task 6: Browser checks, screenshots, docs
+### Task 6: List view by default, casual modern look, 3D one click away
+
+Added after the owner's request: "make list view the default and the UI more casual and modern, then the user can switch to 3D".
+
+**Files:**
+- Modify: `src/ui/view.ts`, `src/ui/view.test.ts`, `src/ui/Shell.tsx`, `src/ui/Shell.test.tsx`, `src/ui/Header.tsx`, `src/ui/RepoList.tsx`, `src/ui/RepoList.test.tsx`, `src/ui/Welcome.tsx`, `src/ui/RoleTags.tsx`, `src/app/globals.css`, `e2e/helpers.ts`, `e2e/leaks.spec.ts`, `e2e/motion.spec.ts`
+
+**Interfaces:**
+- Consumes: `useUniverse` (`view`, `setView`, `role`), `hasWebGL`, `useReducedMotion`.
+- Produces: the first view is always `"list"` (replace `chooseInitialView` with a constant; delete the width/reduced-motion branches); `canShow3D(): boolean` (WebGL present) disables the "Explore in 3D" button with a title when false; hero block (`<h1>` "Hey, I'm Vynn.", line "Welcome to my universe, hope you enjoy the exploring.", the role line, primary button "Explore in 3D", secondary link "Say hi" with `aria-label="Contact"`); role chips under "Show me:"; `RepoList` renders cards (a two-column grid from 760 px, one column below) where the whole card is the link (`data-repo`, `target="_blank"`, `rel="noopener"`) and shows name, blurb, stack chips (`repo.stack`) and role chips; the greeting overlay (`Welcome`) shows only in the 3D view.
+
+- [ ] **Step 1: Write the failing tests.** `view.test.ts`: initial view is `"list"` for wide, narrow, WebGL and reduced-motion inputs; `canShow3D` follows `hasWebGL`. `RepoList.test.tsx`: each repo renders as one link with its name, blurb, every stack chip and role chip; links open in a new tab with `rel` containing `noopener`; the role filter sets `data-dim` on non-matching cards. `Shell.test.tsx`: wide screen with WebGL still starts in list view; the hero text and "Explore in 3D" are present; clicking "Explore in 3D" sets view `"3d"` and the button reads "Back to list"; without WebGL the button is disabled; `Welcome` is not in the DOM in list view.
+- [ ] **Step 2:** Run `npx vitest run src/ui`. Expected: FAIL.
+- [ ] **Step 3: Implement** as above. Look: dark glass cards (`rgba(14,17,40,.6)`, 1 px border, 20 px radius, backdrop blur), hover lifts 3 px and glows in the card's first role colour, soft fade-up on load (off under reduced motion), primary button with a violet-to-cyan gradient, friendly sentence-case labels, and a CSS-only starfield behind the list view (layered radial gradients; no JS, no GPU). Keep the 3D header compact. Contrast of every text colour against its background is at least 4.5:1 (use `contrastRatio` in a test for the chip and card text colours).
+- [ ] **Step 4:** Make `open()` in `e2e/helpers.ts` load the page, click "Explore in 3D" and wait for the canvas; the first motion test checks the list view for default motion too; keep every other e2e test valid. Run `npx vitest run`, `npx tsc --noEmit` and the Playwright suite. Expected: PASS.
+- [ ] **Step 5: Commit** `feat: list view by default with a casual modern look`.
+
+### Task 7: Browser checks, screenshots, docs, final review
 
 **Files:**
 - Modify: `src/scene/e2e.ts` (`?tier=high|medium|low` sets the store tier when `?e2e` is on), `e2e/leaks.spec.ts`, `README.md`

@@ -12,8 +12,10 @@ Keep the 3D universe. Make it easier to notice and to use, and make the bodies l
 - Hint line at the bottom: "Scroll to zoom · Drag to spin · Click a world to open it" (touch: "Pinch to zoom · Drag to spin · Tap a world to open it"). Appears after the greeting, disappears on first use or after 12 s.
 - Sky stays sharp at any zoom: nebula drawn per pixel at screen resolution on a dome that follows the camera, instead of a fixed-size cubemap. Render scale keeps at least 1920 pixels across on high and medium tiers.
 
+- The list view is the default first view, with a casual, modern look (hero, role chips, card grid, CSS starfield). 3D is one clear button away: "Explore in 3D". Nothing 3D loads until the visitor asks. (Owner request after the first draft.)
+
 ## Non-goals
-- No new repos, no new pages, no change to click-opens-repo, role filter, list view, fallback or the Rust/WASM split.
+- No new repos, no new pages, no change to click-opens-repo, role filter, fallback or the Rust/WASM split.
 - No image or model assets.
 
 ## Anti-goals
