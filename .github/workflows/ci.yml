@@ -1,0 +1,41 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            core/target
+          key: cargo-${{ hashFiles('core/Cargo.lock') }}
+      - name: Install wasm-pack
+        run: cargo install wasm-pack --locked
+      - name: Rust tests
+        run: cargo test --release
+        working-directory: core
+      - name: Build WASM
+        run: sh core/build-wasm.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx vitest run
+      - run: npx next build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test
+        env:
+          WASM_REAL: "1"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: out/
