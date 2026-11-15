@@ -1,21 +1,24 @@
 import { expect, test } from "@playwright/test";
 import { open } from "./helpers";
 
-test("reduced motion starts in the list view and has no slow greeting fade", async ({ browser }) => {
+test("reduced motion has no slow greeting fade in 3D", async ({ browser }) => {
   const ctx = await browser.newContext({ reducedMotion: "reduce" });
   const page = await ctx.newPage();
   await page.goto("/?e2e=1");
   await expect(page.locator('[data-view="list"]')).toBeVisible();
+  await page.getByRole("button", { name: "Explore in 3D" }).click();
+  await expect(page.locator("canvas")).toBeVisible();
   const dur = await page.getByTestId("welcome").evaluate((el) => getComputedStyle(el).transitionDuration);
   expect(dur).toBe("0s");
-  await page.getByRole("button", { name: "3D view" }).click();
-  await expect(page.locator("canvas")).toBeVisible();
   await ctx.close();
 });
 
-test("default motion starts in 3D and keeps a sane frame time", async ({ page }) => {
+test("starts in the list, 3D is one click away and keeps a sane frame time", async ({ page }) => {
   // Software GL is fill-bound (about 230 ms at 720p, 130 ms at 360p with the per-pixel sky), so use a small viewport here.
   await page.setViewportSize({ width: 640, height: 360 });
+  await page.goto("/?e2e=1");
+  await expect(page.locator('[data-view="list"]')).toBeVisible();
+  await expect(page.locator("canvas")).toHaveCount(0);
   await open(page);
   await expect(page.locator('[data-view="3d"]')).toBeVisible();
   await page.waitForTimeout(5000);

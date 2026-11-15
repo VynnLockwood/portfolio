@@ -62,6 +62,7 @@ test("a worker that fails to start falls back to the list with a notice", async 
     };
   });
   await page.goto("/?e2e=1");
+  await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(page.getByRole("status")).toContainText("showing the list instead", { timeout: 30_000 });
   await expect(page.locator('[data-view="list"]')).toBeVisible();
   await expect(page.getByRole("link", { name: /Singularity/ })).toBeVisible();
@@ -73,6 +74,8 @@ test("a blocked .wasm file falls back to the list with a notice", async ({ page 
   test.skip(!process.env.WASM_REAL, "needs the real wasm build (set WASM_REAL=1)");
   await page.route("**/wasm/*.wasm", (r) => r.abort());
   await page.goto("/?e2e=1");
+  await page.getByRole("button", { name: "Explore in 3D" }).click();
+  await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(page.getByRole("status")).toContainText("showing the list instead", { timeout: 30_000 });
   await expect(page.locator('[data-view="list"]')).toBeVisible();
 });

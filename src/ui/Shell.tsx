@@ -1,5 +1,5 @@
 "use client";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import repos from "../data/repos.json";
 import type { Repo } from "../data/types";
 import { rig } from "../scene/rigRef";
@@ -8,7 +8,7 @@ import { BodyLabels } from "../scene/Labels";
 import { Header } from "./Header";
 import { Hint } from "./Hint";
 import { RepoList } from "./RepoList";
-import { chooseInitialView, hasWebGL, useReducedMotion } from "./view";
+import { hasWebGL, useReducedMotion } from "./view";
 import { Welcome } from "./Welcome";
 
 // loaded only after mount, and only when the 3D view is on
@@ -21,16 +21,13 @@ export function Shell() {
   const view = useUniverse((s) => s.view);
   const role = useUniverse((s) => s.role);
   const notice = useUniverse((s) => s.notice);
-  const setView = useUniverse((s) => s.setView);
   const hovered = useUniverse((s) => s.hovered);
   const setHovered = useUniverse((s) => s.setHovered);
   const reducedMotion = useReducedMotion();
 
-  useEffect(() => {
-    setView(chooseInitialView({ webgl: hasWebGL(), width: window.innerWidth, reducedMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches }));
-    // decide once, on mount; later changes come from the toggle
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Everyone starts in the list view; 3D needs WebGL, checked once on the client
+  const [webgl, setWebgl] = useState(true);
+  useEffect(() => setWebgl(hasWebGL()), []);
 
   // Esc clears the role filter, or else flies the camera back
   useEffect(() => {
@@ -60,8 +57,8 @@ export function Shell() {
         </>
       )}
       <div className="content">
-        <Header />
-        <Welcome />
+        <Header webgl={webgl} />
+        {view === "3d" && <Welcome />}
         <div role="status" className="notice">{notice}</div>
         {hoveredRepo && view === "3d" && (
           <div className="hover-label" aria-hidden="true">
