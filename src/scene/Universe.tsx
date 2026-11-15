@@ -7,7 +7,8 @@ import { E2E, hook, perf } from "./e2e";
 import { Bodies } from "./Bodies";
 import { CameraRig } from "./CameraRig";
 import { Interaction } from "./Interaction";
-import { Space } from "./space/Space";
+import { Space, useTier } from "./space/Space";
+import { renderDpr } from "./quality";
 import { Sun } from "./Sun";
 import { Warp } from "./Warp";
 
@@ -36,6 +37,13 @@ function FpsProbe() {
 /** The cosmos. Loaded client-only and lazily; falls back to the list if WebGL or the WASM core fails. */
 export default function Universe() {
   const [frameloop, setFrameloop] = useState<"always" | "never">("always");
+  const tier = useTier();
+  const [width, setWidth] = useState(() => (typeof window === "undefined" ? 0 : window.innerWidth));
+  useEffect(() => {
+    const onResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
   const alive = useRef(true);
   const glCleanup = useRef<(() => void) | null>(null);
 
@@ -60,7 +68,7 @@ export default function Universe() {
   return (
     <Canvas
       camera={{ position: [0, 40, 220], fov: 55, near: 0.1, far: 12000 }}
-      dpr={[1, 2]}
+      dpr={renderDpr(width, tier)}
       frameloop={frameloop}
       onCreated={({ gl }) => {
         const el = gl.domElement;
@@ -73,7 +81,7 @@ export default function Universe() {
       }}
     >
       <color attach="background" args={["#05060F"]} />
-      <Space />
+      <Space tier={tier} />
       <Sun />
       <Bodies />
       <CameraRig />

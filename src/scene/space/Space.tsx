@@ -19,12 +19,11 @@ export function useTier(): Tier {
   return setting === "auto" ? auto : setting;
 }
 
-export function Space() {
-  const tier = useTier();
+export function Space({ tier }: { tier: Tier }) {
   const flying = useUniverse((s) => s.flying);
   return (
     <>
-      <Nebula size={TIERS[tier].cubemap} />
+      <Nebula octaves={TIERS[tier].nebulaOctaves} />
       <Stars tier={tier} />
       <Dust count={TIERS[tier].dust} />
       <Effects tier={tier} flying={flying} />
