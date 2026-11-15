@@ -1,17 +1,65 @@
-:root{ --bg:#fff; --ink:#15171c; --soft:#6b7280; --line:#eef0f3; --sans:'Inter Tight','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; }
+:root{
+  --void:#05060F; --ink:#eef1ff; --soft:#9aa3c7; --line:rgba(160,175,255,.16); --accent:#8fa8ff;
+  --sans:'Inter Tight','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+}
 *{ box-sizing:border-box; margin:0; padding:0 }
-body{ font-family:var(--sans); background:var(--bg); color:var(--ink); min-height:100dvh; line-height:1.5; }
+html{ -webkit-font-smoothing:antialiased }
+body{ font-family:var(--sans); background:var(--void); color:var(--ink); min-height:100dvh; line-height:1.5 }
 a{ color:inherit }
-.wrap{ display:flex; flex-direction:column; align-items:center; gap:22px; padding:clamp(28px,6vw,72px); text-align:center }
-.brandline{ display:inline-flex; align-items:center; gap:13px }
-.mark{ width:64px; height:64px; object-fit:contain }
-.word{ font-weight:640; font-size:22px; text-align:left }
-.word small{ display:block; font-weight:480; font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--soft) }
-.lede{ color:var(--soft); max-width:44ch }
-.repo-list ul{ list-style:none; width:min(560px,92vw); border-top:1px solid var(--line); text-align:left }
-.repo-list li a{ display:flex; gap:12px; align-items:baseline; padding:13px 6px; border-bottom:1px solid var(--line); text-decoration:none }
+:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:6px }
+
+.shell{ position:relative; min-height:100dvh }
+.stage{ position:fixed; inset:0; z-index:0 }
+.content{ position:relative; z-index:1; min-height:100dvh; display:flex; flex-direction:column; gap:18px; padding:clamp(16px,3vw,32px); pointer-events:none }
+.content > *{ pointer-events:auto }
+[data-view="3d"] .content{ min-height:100dvh; justify-content:space-between }
+
+.header{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 24px }
+.brandline{ display:flex; align-items:center; gap:12px }
+.mark{ width:44px; height:44px; object-fit:contain }
+.word{ font-weight:640; font-size:18px; letter-spacing:-.02em; line-height:1.1 }
+.word small{ display:block; font-weight:480; font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--soft); margin-top:3px }
+.role-line{ color:var(--soft); font-size:13px; margin-top:4px; max-width:46ch }
+.role-tags{ display:flex; flex-wrap:wrap; gap:8px }
+.role-tags button, .btn{
+  font:inherit; font-size:13px; color:var(--ink); text-decoration:none; cursor:pointer;
+  background:rgba(8,10,30,.55); border:1px solid var(--line); padding:7px 14px; border-radius:999px;
+  backdrop-filter:blur(6px); transition:border-color .25s, background .25s, transform .25s;
+}
+.role-tags button{ border-color:color-mix(in srgb, var(--role) 45%, transparent) }
+.role-tags button[aria-pressed="true"]{ background:color-mix(in srgb, var(--role) 22%, #05060F); border-color:var(--role); color:var(--role) }
+.role-tags button:hover, .btn:hover{ transform:translateY(-1px); border-color:var(--accent) }
+.actions{ display:flex; gap:8px }
+
+.welcome{
+  position:fixed; inset:0; z-index:2; display:grid; place-content:center; text-align:center; gap:10px; pointer-events:none;
+  transition:opacity 1s ease, visibility 1s; opacity:1;
+}
+.welcome h1{ font-size:clamp(30px,6vw,64px); font-weight:640; letter-spacing:-.04em; line-height:1.05 }
+.welcome p{ color:var(--soft); font-size:clamp(15px,2vw,20px) }
+.welcome[data-state="done"]{ opacity:0; visibility:hidden }
+
+.notice{ color:var(--soft); font-size:13px; min-height:1.4em }
+.repo-list ul{ list-style:none; width:min(640px,100%); margin:0 auto; border-top:1px solid var(--line) }
+.repo-list li{ transition:opacity .4s }
+.repo-list li[data-dim="true"]{ opacity:.35 }
+.repo-list li a{ display:grid; grid-template-columns:auto 1fr auto auto; gap:4px 14px; align-items:baseline; padding:14px 6px; border-bottom:1px solid var(--line); text-decoration:none; transition:background .25s }
+.repo-list li a:hover{ background:rgba(143,168,255,.07) }
 .repo-name{ font-weight:600 }
-.repo-blurb{ color:var(--soft); font-size:13px; flex:1 }
+.repo-blurb{ color:var(--soft); font-size:13px }
 .repo-roles{ display:flex; gap:8px; font-size:11px }
-.sr-only-focusable:not(:focus-within){ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
-.foot{ font-size:12px; color:var(--soft) }
+.repo-arrow{ color:var(--soft) }
+.sr-only-focusable:not(:focus-within){ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); clip-path:inset(50%); white-space:nowrap }
+.sr-only-focusable:focus-within{ position:fixed; left:50%; bottom:56px; transform:translateX(-50%); z-index:3; max-height:60dvh; overflow:auto; background:rgba(5,6,15,.92); padding:8px; border-radius:12px }
+
+.foot{ text-align:center; font-size:12px; color:var(--soft); padding:8px }
+.foot a{ text-decoration:none }
+.foot a:hover{ color:var(--ink) }
+
+@media (max-width:640px){
+  .repo-list li a{ grid-template-columns:1fr auto }
+  .repo-blurb{ grid-column:1 / -1; order:3 }
+}
+@media (prefers-reduced-motion:reduce){
+  .welcome, .repo-list li, .role-tags button, .btn{ transition:none }
+}

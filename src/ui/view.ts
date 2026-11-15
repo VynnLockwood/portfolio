@@ -15,3 +15,23 @@ export function useReducedMotion(): boolean {
   }, []);
   return reduced;
 }
+
+export interface ViewEnv {
+  webgl: boolean;
+  width: number;
+  reducedMotion: boolean;
+}
+
+/** List view for no-WebGL, very small screens (< 480 px) and reduced-motion visitors; 3D otherwise. */
+export function chooseInitialView(env: ViewEnv): "3d" | "list" {
+  return !env.webgl || env.width < 480 || env.reducedMotion ? "list" : "3d";
+}
+
+export function hasWebGL(): boolean {
+  try {
+    const c = document.createElement("canvas");
+    return !!(c.getContext("webgl2") || c.getContext("webgl"));
+  } catch {
+    return false;
+  }
+}
