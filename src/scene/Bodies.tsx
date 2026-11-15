@@ -110,7 +110,8 @@ uniform float uSeed, uMix, uSunX, uSunY, uSunZ;
 varying vec2 vXY; varying vec3 vWN;
 void main(){
   float r = (length(vXY) - 1.4) / 0.8;
-  float a = smoothstep(0.0, .08, r) * smoothstep(1.0, .86, r) * (0.55 + 0.45 * sin(r * 46.0 + uSeed));
+  float a = smoothstep(0.0, .08, r) * smoothstep(1.0, .86, r) * (0.72 + 0.28 * (0.6 * sin(r * 11.0 + uSeed) + 0.4 * sin(r * 27.0 + uSeed * 1.7)))
+    * (1.0 - 0.7 * smoothstep(0.05, 0.0, abs(r - 0.58)));
   vec3 L = normalize(vec3(uSunX, uSunY, uSunZ));
   float lit = 0.35 + 0.65 * abs(dot(normalize(vWN), L));
   gl_FragColor = vec4(vec3(.86,.74,.52) * lit * (0.2 + 0.8 * uMix), a * 0.85 * (0.3 + 0.7 * uMix));

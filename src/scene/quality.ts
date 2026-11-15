@@ -26,3 +26,9 @@ export function renderDpr(cssWidth: number, tier: Tier): [number, number] {
   if (tier === "low" || !(cssWidth > 0)) return [1, 2];
   return [Math.min(2, Math.max(1, 1920 / cssWidth)), 2];
 }
+
+/** Test hook: `?tier=high|medium|low` picks a tier. Anything else is ignored. */
+export function tierFromQuery(search: string): Tier | null {
+  const t = new URLSearchParams(search).get("tier");
+  return t === "high" || t === "medium" || t === "low" ? t : null;
+}

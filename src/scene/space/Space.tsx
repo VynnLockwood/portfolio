@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useUniverse } from "../../store/useUniverse";
-import { E2E, perf } from "../e2e";
+import { E2E, E2E_TIER, perf } from "../e2e";
 import { Dust } from "./Dust";
 import { Effects } from "./Effects";
 import { Nebula } from "./Nebula";
@@ -10,7 +10,7 @@ import { Stars } from "./Stars";
 /** Active quality tier: user override, else measured fps over the first 3 s. `?e2e=1` fixes it to `low`. */
 export function useTier(): Tier {
   const setting = useUniverse((s) => s.tier);
-  const [auto, setAuto] = useState<Tier>(E2E ? "low" : "high");
+  const [auto, setAuto] = useState<Tier>(E2E ? (E2E_TIER ?? "low") : "high");
   useEffect(() => {
     if (E2E) return;
     const h = setTimeout(() => setAuto(pickTier(perf.fps)), 3000);

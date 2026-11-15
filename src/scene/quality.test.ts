@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pickTier, renderDpr, starCounts, TIERS } from "./quality";
+import { pickTier, renderDpr, starCounts, tierFromQuery, TIERS } from "./quality";
 
 describe("quality tiers", () => {
   it("high tier star counts are 14000 / 3000 / 100", () => {
@@ -28,5 +28,14 @@ describe("quality tiers", () => {
     expect(renderDpr(800, "high")).toEqual([2, 2]);
     expect(renderDpr(1280, "low")).toEqual([1, 2]);
     expect(renderDpr(0, "high")).toEqual([1, 2]);
+  });
+});
+
+describe("tierFromQuery", () => {
+  it("reads ?tier= only when it names a tier", () => {
+    expect(tierFromQuery("?e2e=1&tier=high")).toBe("high");
+    expect(tierFromQuery("?tier=medium")).toBe("medium");
+    expect(tierFromQuery("?tier=ultra")).toBeNull();
+    expect(tierFromQuery("")).toBeNull();
   });
 });
