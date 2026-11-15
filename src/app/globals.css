@@ -1,0 +1,17 @@
+:root{ --bg:#fff; --ink:#15171c; --soft:#6b7280; --line:#eef0f3; --sans:'Inter Tight','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif; }
+*{ box-sizing:border-box; margin:0; padding:0 }
+body{ font-family:var(--sans); background:var(--bg); color:var(--ink); min-height:100dvh; line-height:1.5; }
+a{ color:inherit }
+.wrap{ display:flex; flex-direction:column; align-items:center; gap:22px; padding:clamp(28px,6vw,72px); text-align:center }
+.brandline{ display:inline-flex; align-items:center; gap:13px }
+.mark{ width:64px; height:64px; object-fit:contain }
+.word{ font-weight:640; font-size:22px; text-align:left }
+.word small{ display:block; font-weight:480; font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:var(--soft) }
+.lede{ color:var(--soft); max-width:44ch }
+.repo-list ul{ list-style:none; width:min(560px,92vw); border-top:1px solid var(--line); text-align:left }
+.repo-list li a{ display:flex; gap:12px; align-items:baseline; padding:13px 6px; border-bottom:1px solid var(--line); text-decoration:none }
+.repo-name{ font-weight:600 }
+.repo-blurb{ color:var(--soft); font-size:13px; flex:1 }
+.repo-roles{ display:flex; gap:8px; font-size:11px }
+.sr-only-focusable:not(:focus-within){ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
+.foot{ font-size:12px; color:var(--soft) }
