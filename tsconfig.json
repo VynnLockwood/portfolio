@@ -27,7 +27,8 @@
         "./src/*"
       ],
       "@wasm/*": [
-        "./src/wasm/*"
+        "./src/wasm/*",
+        "./src/wasm-stub/*"
       ]
     }
   },
