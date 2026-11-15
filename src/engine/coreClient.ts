@@ -37,7 +37,7 @@ export function setCore(c: CoreApi | null, stop?: () => void): void {
   if (c && stop) workerStats.created++;
 }
 
-/** Free the layout, stop the worker and forget it. Safe to call twice, and while a call is still pending. */
+/** Stop the worker (this frees its WASM memory) and forget it. Never waits on the worker, so a hung one cannot block it. Safe to call twice. */
 export async function disposeCore(): Promise<void> {
   const c = core;
   const stop = terminate;
@@ -45,11 +45,6 @@ export async function disposeCore(): Promise<void> {
   terminate = null;
   failed = null;
   if (!c) return;
-  try {
-    await c.layoutFree();
-  } catch {
-    // the worker may already be gone; terminating below is what matters
-  }
   if (stop) {
     stop();
     workerStats.terminated++;

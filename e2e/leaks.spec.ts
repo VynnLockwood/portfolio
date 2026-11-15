@@ -76,3 +76,13 @@ test("a blocked .wasm file falls back to the list with a notice", async ({ page 
   await expect(page.getByRole("status")).toContainText("showing the list instead", { timeout: 30_000 });
   await expect(page.locator('[data-view="list"]')).toBeVisible();
 });
+
+// Real wasm only: the worker must answer calls sent while the .wasm was still loading (stars and layout actually arrive).
+test("the real core answers and stays in 3D", async ({ page }) => {
+  test.skip(!process.env.WASM_REAL, "needs the real wasm build (set WASM_REAL=1)");
+  await open(page);
+  expect(typeof (await wasmLive(page))).toBe("number");
+  await page.waitForTimeout(3000);
+  await expect(page.locator('[data-view="3d"]')).toBeVisible();
+  await expect(page.getByText("3D could not start")).toHaveCount(0);
+});

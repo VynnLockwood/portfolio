@@ -82,16 +82,14 @@ describe("Picker", () => {
 });
 
 describe("Universe teardown", () => {
-  it("unmounting frees the core once and every worker made is terminated", async () => {
+  it("unmounting terminates the worker once and every worker made is terminated", async () => {
     const terminate = vi.fn();
     const core = createCoreApi(wasm as unknown as WasmModule);
-    const free = vi.spyOn(core, "layoutFree");
     setCore(core, terminate);
     const { unmount } = render(<Universe />);
     await act(async () => { await tick(5); });
     unmount();
     await act(async () => { await tick(5); });
-    expect(free).toHaveBeenCalledTimes(1);
     expect(terminate).toHaveBeenCalledTimes(1);
     expect(workerStats.created).toBe(workerStats.terminated);
   });

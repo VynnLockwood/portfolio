@@ -100,3 +100,11 @@ export function createCoreApi(wasm: WasmModule): CoreApi {
     },
   };
 }
+
+/** A CoreApi that can be exposed before the WASM has loaded: every call waits for `ready`. */
+export function lazyApi(ready: Promise<CoreApi>): CoreApi {
+  return new Proxy({} as CoreApi, {
+    get: (_t, name) => async (...args: unknown[]) =>
+      ((await ready) as unknown as Record<string | symbol, (...a: unknown[]) => unknown>)[name](...args),
+  });
+}

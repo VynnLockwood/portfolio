@@ -1,6 +1,6 @@
 "use client";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { disposeCore, peekCore, whenCoreReady, workerStats } from "../engine/coreClient";
 import { fallbackToList } from "../store/useUniverse";
 import { E2E, hook, perf } from "./e2e";
@@ -36,9 +36,12 @@ function FpsProbe() {
 /** The cosmos. Loaded client-only and lazily; falls back to the list if WebGL or the WASM core fails. */
 export default function Universe() {
   const [frameloop, setFrameloop] = useState<"always" | "never">("always");
+  const alive = useRef(true);
+  const glCleanup = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     let dead = false;
+    alive.current = true;
     whenCoreReady().catch(() => {
       if (!dead) fallbackToList();
     });
@@ -46,6 +49,9 @@ export default function Universe() {
     document.addEventListener("visibilitychange", onVis);
     return () => {
       dead = true;
+      alive.current = false;
+      glCleanup.current?.();
+      glCleanup.current = null;
       document.removeEventListener("visibilitychange", onVis);
       void disposeCore();
     };
@@ -57,10 +63,13 @@ export default function Universe() {
       dpr={[1, 2]}
       frameloop={frameloop}
       onCreated={({ gl }) => {
-        gl.domElement.addEventListener("webglcontextlost", (e) => {
+        const el = gl.domElement;
+        const onLost = (e: Event) => {
           e.preventDefault();
-          fallbackToList();
-        });
+          if (alive.current) fallbackToList(); // an old canvas torn down by a view switch must not push the new view to the list
+        };
+        el.addEventListener("webglcontextlost", onLost);
+        glCleanup.current = () => el.removeEventListener("webglcontextlost", onLost);
       }}
     >
       <color attach="background" args={["#05060F"]} />

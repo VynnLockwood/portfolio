@@ -60,6 +60,18 @@ describe("Universe", () => {
     expect(useUniverse.getState().notice).toContain("showing the list instead");
   });
 
+  it("ignores a context-lost event from an old canvas after unmount (quick list/3D toggle)", async () => {
+    setCore(healthy(), () => {});
+    const { unmount } = render(<Universe />);
+    await flush();
+    const oldGl = canvas.glDom!;
+    unmount();
+    useUniverse.setState({ view: "3d", notice: null });
+    oldGl.dispatchEvent(new Event("webglcontextlost", { cancelable: true }));
+    expect(useUniverse.getState().view).toBe("3d");
+    expect(useUniverse.getState().notice).toBeNull();
+  });
+
   it("keeps dpr at [1, 2] and does not remount the canvas on resize or a pixel-ratio change", async () => {
     setCore(healthy(), () => {});
     render(<Universe />);

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import * as wasm from "@wasm/universe_core.js";
-import { createCoreApi, type WasmModule } from "./coreApi";
+import { createCoreApi, lazyApi, type CoreApi, type WasmModule } from "./coreApi";
 import { disposeCore, getCore, setCore, workerStats } from "./coreClient";
 
 const bodies = [
@@ -67,24 +67,29 @@ describe("createCoreApi", () => {
 });
 
 describe("coreClient", () => {
-  it("disposeCore frees the layout, terminates once, and a second call is a no-op", async () => {
+  it("disposeCore terminates once and a second call is a no-op", async () => {
     const terminate = vi.fn();
-    const fake = { ...api() };
-    const free = vi.spyOn(fake, "layoutFree");
-    setCore(fake, terminate);
-    expect(getCore()).toBe(fake);
+    setCore({ ...api() }, terminate);
     await disposeCore();
     await disposeCore();
-    expect(free).toHaveBeenCalledTimes(1);
     expect(terminate).toHaveBeenCalledTimes(1);
     expect(workerStats.created - workerStats.terminated).toBe(0);
   });
 
-  it("disposeCore swallows a rejected layoutFree and still terminates", async () => {
+  it("disposeCore terminates even when the worker never answers", async () => {
     const terminate = vi.fn();
-    const fake = { ...api(), layoutFree: () => Promise.reject(new Error("worker gone")) };
-    setCore(fake, terminate);
-    await expect(disposeCore()).resolves.toBeUndefined();
+    setCore({ ...api(), layoutFree: () => new Promise<void>(() => {}) }, terminate);
+    await Promise.race([disposeCore(), new Promise((r) => setTimeout(r, 200))]);
     expect(terminate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("lazyApi", () => {
+  it("answers a call that arrives before the core is ready", async () => {
+    let ready!: (c: CoreApi) => void;
+    const lazy = lazyApi(new Promise<CoreApi>((r) => (ready = r)));
+    const early = lazy.debugLive();
+    ready(api());
+    await expect(early).resolves.toBeTypeOf("number");
   });
 });
