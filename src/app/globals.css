@@ -67,8 +67,8 @@ a{ color:inherit }
   border:1px solid var(--line); padding:3px 9px 3px 7px; border-radius:999px; will-change:transform; transition:opacity .35s;
 }
 .body-label i{ width:7px; height:7px; border-radius:50% }
-.body-label[data-hidden="true"]{ opacity:0 }
 .body-label[data-dim="true"]{ opacity:.3 }
+.body-label[data-hidden="true"]{ opacity:0 !important }
 .hint{
   position:fixed; z-index:2; left:50%; bottom:56px; transform:translateX(-50%); pointer-events:none; text-align:center;
   font-size:13px; color:#C9D3F5; background:rgba(8,10,30,.8); border:1px solid var(--line); padding:8px 16px; border-radius:999px;
@@ -99,7 +99,7 @@ a{ color:inherit }
 
 .btn-primary{ background:linear-gradient(95deg,#6A4DF0,#4A63F0); border-color:transparent; color:#fff; font-weight:600; padding:9px 18px }
 .btn-primary:hover{ border-color:transparent; filter:brightness(1.1) }
-.btn:disabled{ opacity:.5; cursor:not-allowed; transform:none }
+.btn[aria-disabled="true"], .btn:disabled{ opacity:.5; cursor:not-allowed; transform:none }
 .btn, .role-tags button{ padding:8px 16px; font-size:14px }
 
 .repo-list ul{
@@ -134,3 +134,4 @@ a{ color:inherit }
   .shell[data-view="list"] .hero > *, .shell[data-view="list"] .repo-list li{ animation:none }
   .repo-list li a, .repo-arrow{ transition:none }
 }
+.note{ font-size:13px; color:var(--soft); margin:8px 0 0 }

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import repos from "../data/repos.json";
 import type { Repo } from "../data/types";
-import { createPlanetAssets, PLANET_SEGMENTS } from "./Bodies";
+import { bodyRadius, createPlanetAssets, liftFraction, LIFT, MIN_CAM_DISTANCE, PLANET_SEGMENTS } from "./Bodies";
 import { hasRing, planetKind } from "./planets";
 
 const list = repos as Repo[];
@@ -32,5 +32,16 @@ describe("planet assets", () => {
     const spies = [a.geo, a.ringGeo, ...a.mats, ...a.rings.map((r) => r.mat)].map((o) => vi.spyOn(o, "dispose"));
     a.dispose();
     spies.forEach((s) => expect(s).toHaveBeenCalledTimes(1));
+  });
+});
+
+describe("close zoom", () => {
+  it("the lift fades out when the camera is near, so a planet never moves into the lens", () => {
+    expect(liftFraction(10, 6, 1)).toBe(0);
+    expect(liftFraction(200, 6, 1)).toBeCloseTo(LIFT / 200, 6);
+    expect(liftFraction(200, 6, 0)).toBe(0);
+  });
+  it("the nearest the camera can get still clears the biggest planet, even after the lift", () => {
+    expect(MIN_CAM_DISTANCE - LIFT).toBeGreaterThan(bodyRadius(1) * 1.15);
   });
 });

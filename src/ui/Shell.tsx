@@ -4,7 +4,6 @@ import repos from "../data/repos.json";
 import type { Repo } from "../data/types";
 import { rig } from "../scene/rigRef";
 import { useUniverse } from "../store/useUniverse";
-import { BodyLabels } from "../scene/Labels";
 import { Header } from "./Header";
 import { Hint } from "./Hint";
 import { RepoList } from "./RepoList";
@@ -15,6 +14,7 @@ import { Welcome } from "./Welcome";
 const list = repos as Repo[];
 
 const Universe = lazy(() => import("../scene/Universe"));
+const BodyLabels = lazy(() => import("../scene/Labels").then((m) => ({ default: m.BodyLabels }))); // keeps three.js out of the first load
 
 /** The page. Server HTML is the list view, so crawlers, screen readers and no-JS visitors get the full content. */
 export function Shell() {
@@ -52,7 +52,7 @@ export function Shell() {
               <Universe />
             </Suspense>
           </div>
-          <BodyLabels />
+          <Suspense fallback={null}><BodyLabels /></Suspense>
           <Hint />
         </>
       )}

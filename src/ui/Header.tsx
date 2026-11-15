@@ -14,15 +14,15 @@ export function Header({ webgl = true }: { webgl?: boolean }) {
     <button
       className="btn btn-primary"
       type="button"
-      disabled={!in3d && !webgl}
-      title={!in3d && !webgl ? "Your browser has no WebGL, so 3D is not available here" : undefined}
-      onClick={() => setView(in3d ? "list" : "3d")}
+      aria-disabled={!in3d && !webgl ? true : undefined}
+      aria-describedby={!in3d && !webgl ? "no3d" : undefined}
+      onClick={() => { if (in3d || webgl) setView(in3d ? "list" : "3d"); }}
     >
       {in3d ? "Back to list" : "Explore in 3D"}
     </button>
   );
   const contact = (
-    <a className="btn" href={CONTACT_URL} target="_blank" rel="noopener" aria-label="Contact">
+    <a className="btn" href={CONTACT_URL} target="_blank" rel="noopener">
       Say hi
     </a>
   );
@@ -41,7 +41,7 @@ export function Header({ webgl = true }: { webgl?: boolean }) {
           <p className="role-line">{ROLE_LINE}</p>
         </div>
         <RoleTags />
-        <div className="actions">{contact}{toggle}</div>
+        <div className="actions" key="actions">{toggle}{contact}</div>
       </header>
     );
   }
@@ -51,7 +51,8 @@ export function Header({ webgl = true }: { webgl?: boolean }) {
       <h1>Hey, I&apos;m <span className="grad">Vynn.</span></h1>
       <p className="hero-sub">Welcome to my universe, hope you enjoy the exploring.</p>
       <p className="role-line">{ROLE_LINE}</p>
-      <div className="actions">{toggle}{contact}</div>
+      <div className="actions" key="actions">{toggle}{contact}</div>
+      {!webgl && <p id="no3d" className="note">3D needs WebGL, which this browser does not have.</p>}
       <div className="filter">
         <span>Show me:</span>
         <RoleTags />

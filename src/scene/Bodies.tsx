@@ -14,6 +14,14 @@ import { fallbackToList, useUniverse } from "../store/useUniverse";
 const list = repos as Repo[];
 
 /** Biggest body (rank 1) has radius 6.0 world units, smallest (rank 9) 2.25. */
+/** How far matching bodies lift toward the camera, and the closest the camera may get to its target. */
+export const LIFT = 4;
+export const MIN_CAM_DISTANCE = 13;
+/** Fraction of the way to the camera a body lifts; fades to 0 when the camera is within 3 radii so it never enters the lens. */
+export function liftFraction(away: number, radius: number, mix: number): number {
+  const fade = Math.min(1, Math.max(0, (away - 2 * radius) / radius));
+  return (LIFT * mix * fade) / (away || 1);
+}
 export const bodyRadius = (rank: number): number => 6.0 - (rank - 1) * (3.75 / 8);
 
 /** Same formula the Rust layout tests use; higher weight orbits closer to the sun. */
@@ -219,7 +227,7 @@ export function Bodies() {
       st.tmp.set(st.layout[i * 3], st.layout[i * 3 + 1], st.layout[i * 3 + 2]);
       // matching bodies lift slightly toward the camera
       const away = st.tmp.distanceTo(camera.position) || 1;
-      st.tmp.lerp(camera.position, (4 * st.mix[i]) / away);
+      st.tmp.lerp(camera.position, liftFraction(away, bodyRadius(list[i].rank), st.mix[i]));
       m.position.copy(st.tmp);
       bodyBuffers.positions[i * 3] = st.tmp.x;
       bodyBuffers.positions[i * 3 + 1] = st.tmp.y;

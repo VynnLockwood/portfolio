@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -38,8 +40,10 @@ describe("Shell", () => {
     render(<Shell />);
     await act(async () => {});
     const b = screen.getByRole("button", { name: "Explore in 3D" });
-    expect(b).toBeDisabled();
-    expect(b).toHaveAttribute("title", expect.stringMatching(/WebGL/i));
+    expect(b).toHaveAttribute("aria-disabled", "true");
+    expect(b).toHaveAccessibleDescription(/WebGL/i); // keyboard, screen reader and touch users get the reason too
+    fireEvent.click(b);
+    expect(useUniverse.getState().view).toBe("list");
   });
 
   it("shows the greeting overlay when 3D opens and dismisses it on a key press", async () => {
@@ -52,6 +56,26 @@ describe("Shell", () => {
     expect(welcome).toHaveAttribute("data-state", "shown");
     fireEvent.keyDown(window, { key: "a" });
     expect(welcome).toHaveAttribute("data-state", "done");
+  });
+
+  it("keeps keyboard focus on the toggle when switching list and 3D", async () => {
+    render(<Shell />);
+    screen.getByRole("button", { name: "Explore in 3D" }).focus();
+    fireEvent.click(document.activeElement as HTMLElement);
+    await screen.findByTestId("universe");
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Back to list" }));
+    fireEvent.click(document.activeElement as HTMLElement);
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Explore in 3D" }));
+  });
+
+  it("does not load the 3D code for the labels on the first (list) render", () => {
+    const src = readFileSync(join(__dirname, "Shell.tsx"), "utf8");
+    expect(src).not.toMatch(/import\s*\{[^}]*\}\s*from\s*"\.\.\/scene\/Labels"/); // static import would put three.js in the first load
+  });
+
+  it("hides a label that is out of view even when it is also dimmed", () => {
+    const css = readFileSync(join(__dirname, "../app/globals.css"), "utf8");
+    expect(css).toMatch(/\.body-label\[data-hidden="true"\]\s*\{[^}]*opacity:\s*0\s*!important/);
   });
 
   it("shows the role statement", () => {
@@ -83,7 +107,7 @@ describe("Shell", () => {
 
   it("the Contact link opens in a new tab safely", () => {
     render(<Shell />);
-    const a = screen.getByRole("link", { name: "Contact" }); // visible text is friendlier ("Say hi")
+    const a = screen.getByRole("link", { name: "Say hi" }); // accessible name matches the visible text
     expect(a).toHaveTextContent("Say hi");
     expect(a).toHaveAttribute("href", "https://github.com/VynnLockwood");
     expect(a).toHaveAttribute("target", "_blank");

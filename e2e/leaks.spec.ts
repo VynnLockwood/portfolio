@@ -93,7 +93,6 @@ test("a blocked .wasm file falls back to the list with a notice", async ({ page 
   await page.route("**/wasm/*.wasm", (r) => r.abort());
   await page.goto("/?e2e=1");
   await page.getByRole("button", { name: "Explore in 3D" }).click();
-  await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(page.getByRole("status")).toContainText("showing the list instead", { timeout: 30_000 });
   await expect(page.locator('[data-view="list"]')).toBeVisible();
 });

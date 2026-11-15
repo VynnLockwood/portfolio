@@ -7,7 +7,7 @@ import { Vector3 } from "three";
 import { getCore } from "../engine/coreClient";
 import { fallbackToList, useUniverse } from "../store/useUniverse";
 import { useReducedMotion } from "../ui/view";
-import { bodyBuffers, bodyRadius } from "./Bodies";
+import { bodyBuffers, bodyRadius, MIN_CAM_DISTANCE } from "./Bodies";
 import { frameExtent } from "./framing";
 import repos from "../data/repos.json";
 import type { Repo } from "../data/types";
@@ -118,5 +118,5 @@ export function CameraRig() {
     }
   });
 
-  return <CameraControls ref={controls} makeDefault dampingFactor={0.08} minDistance={8} maxDistance={900} />;
+  return <CameraControls ref={controls} makeDefault dampingFactor={0.08} minDistance={MIN_CAM_DISTANCE} maxDistance={900} />;
 }
