@@ -1,8 +1,15 @@
 # portfolio
 
-Source of **https://vynnlockwood.lunariankids.com**: a career portfolio shown as a small universe.
-Each glowing body is one of my public GitHub projects. Click one to open that repo in a new tab.
-A plain HTML list of the same repos is always in the page (search engines, screen readers, and a "List view" button).
+Source of **https://vynnlockwood.lunariankids.com**: a career portfolio. It opens as a friendly list of cards, one per public GitHub project,
+and "Explore in 3D" turns the same repos into a small universe. Click a body (or a card) to open the repo in a new tab.
+The list is always in the page (search engines, screen readers, no-WebGL browsers).
+
+## The 3D look
+
+- A sun at the centre and one lit planet per repo: rocky, ocean, gas giant (with rings) or storm world, by first role.
+- A per-pixel procedural nebula and star field. No image files, and the canvas renders at least 1920 px across, so zooming stays sharp.
+- Name labels follow the bodies. A hint ("scroll to zoom, drag to spin") shows once.
+- Role tags dim the bodies that do not match.
 
 Only public repositories are linked.
 
@@ -29,6 +36,7 @@ npm run e2e                # Playwright: leaks, fallback, motion
 ```
 
 Without a WASM toolchain, `NEXT_PUBLIC_USE_STUB=1 npm run build` uses a JS stub of the core (tests and local look only).
+Tests can force a quality tier with `?e2e=1&tier=high|medium|low` (the e2e page is `low` by default).
 Set `PERF=1` to also run the strict 16.7 ms frame-time test on a machine with a GPU, and `WASM_REAL=1` for the blocked-`.wasm` test.
 
 ## Deploy

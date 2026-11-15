@@ -23,6 +23,24 @@ test("switching 3D / list many times does not grow GPU buffers, workers or wasm 
   await expect(page.getByText("3D could not start")).toHaveCount(0); // leaving 3D on purpose is not an error
 });
 
+// The high tier adds the per-pixel sky, rings and the sun corona; they must be freed too.
+test("the high tier does not grow GPU buffers or workers across list / 3D switches", async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.setViewportSize({ width: 480, height: 270 }); // software GL is fill-bound
+  await open(page, "e2e=1&tier=high");
+  for (let i = 0; i < 2; i++) { await toList(page); await toThreeD(page); }
+  const warm = await gpu(page);
+  for (let i = 0; i < 4; i++) { await toList(page); await toThreeD(page); }
+  const after = await gpu(page);
+  expect(after.geometries).toBeLessThanOrEqual(warm.geometries);
+  expect(after.textures).toBeLessThanOrEqual(warm.textures);
+  const w = await workers(page);
+  expect(w.created - w.terminated).toBeLessThanOrEqual(1);
+  expect(errors).toEqual([]);
+});
+
 test("toggling the role tags quickly leaves no extra GPU buffers and no errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -62,6 +80,7 @@ test("a worker that fails to start falls back to the list with a notice", async 
     };
   });
   await page.goto("/?e2e=1");
+  await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(page.getByRole("status")).toContainText("showing the list instead", { timeout: 30_000 });
   await expect(page.locator('[data-view="list"]')).toBeVisible();
   await expect(page.getByRole("link", { name: /Singularity/ })).toBeVisible();
@@ -73,6 +92,7 @@ test("a blocked .wasm file falls back to the list with a notice", async ({ page 
   test.skip(!process.env.WASM_REAL, "needs the real wasm build (set WASM_REAL=1)");
   await page.route("**/wasm/*.wasm", (r) => r.abort());
   await page.goto("/?e2e=1");
+  await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(page.getByRole("status")).toContainText("showing the list instead", { timeout: 30_000 });
   await expect(page.locator('[data-view="list"]')).toBeVisible();
 });

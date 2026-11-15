@@ -72,11 +72,14 @@ describe("Universe", () => {
     expect(useUniverse.getState().notice).toBeNull();
   });
 
-  it("keeps dpr at [1, 2] and does not remount the canvas on resize or a pixel-ratio change", async () => {
+  it("keeps at least 1920 px across, follows the window width, and never remounts the canvas", async () => {
     setCore(healthy(), () => {});
+    Object.defineProperty(window, "innerWidth", { value: 1280, configurable: true });
     render(<Universe />);
     await flush();
+    expect(canvas.props.at(-1)!.dpr).toEqual([1.5, 2]);
     Object.defineProperty(window, "devicePixelRatio", { value: 3, configurable: true });
+    Object.defineProperty(window, "innerWidth", { value: 2560, configurable: true });
     act(() => void window.dispatchEvent(new Event("resize")));
     expect(canvas.props.at(-1)!.dpr).toEqual([1, 2]);
     expect(canvas.unmounts).toBe(0);

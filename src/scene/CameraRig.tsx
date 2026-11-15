@@ -7,7 +7,8 @@ import { Vector3 } from "three";
 import { getCore } from "../engine/coreClient";
 import { fallbackToList, useUniverse } from "../store/useUniverse";
 import { useReducedMotion } from "../ui/view";
-import { bodyBuffers, bodyRadius } from "./Bodies";
+import { bodyBuffers, bodyRadius, MIN_CAM_DISTANCE } from "./Bodies";
+import { frameExtent } from "./framing";
 import repos from "../data/repos.json";
 import type { Repo } from "../data/types";
 import { E2E } from "./e2e";
@@ -19,14 +20,19 @@ const list = repos as Repo[];
 const SAMPLES = 120;
 const INTRO_MS = 2200, FLY_MS = 1100, BACK_MS = 900, REDUCED_MS = 300;
 const IDLE_AFTER_MS = 20000, IDLE_DEG_PER_S = 0.6;
-/** Layout orbits stay within ORBIT_MIN + ORBIT_SPAN = 115 units of the sun, so framing uses that fixed extent. */
-const FRAME_POINTS = new Float32Array([-115, 0, 0, 115, 0, 0, 0, 60, 0]);
+/** Layout orbits settle within about 85 units of the sun (radius up to 6 on top), so framing uses a fixed extent (tighter on wide screens, see framing.ts). */
+const framePoints = (aspect: number): Float32Array => {
+  const e = frameExtent(aspect);
+  return new Float32Array([-e, 0, 0, e, 0, 0, 0, e * 0.55, 0]);
+};
 const INTRO_FROM = new Float32Array([0, 200, 1400, 0, 0, 0]);
 
 /** Camera moves: Rust samples each path once (worker), this plays it back with an array read per frame. */
 export function CameraRig() {
   const controls = useRef<React.ComponentRef<typeof CameraControls>>(null);
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
+  const getThree = useThree((s) => s.get);
+  const aspect = () => { const { width, height } = getThree().size; return height > 0 ? width / height : 1.6; };
   const reducedRef = useRef(false);
   reducedRef.current = useReducedMotion();
   const player = useMemo(() => new PathPlayer(), []);
@@ -69,7 +75,7 @@ export function CameraRig() {
     c.addEventListener("controlstart", onInput);
 
     rig.back = () => {
-      core.framePose(FRAME_POINTS, camera.fov).then((to) => play(to, BACK_MS, false)).catch(() => fallbackToList());
+      core.framePose(framePoints(aspect()), camera.fov).then((to) => play(to, BACK_MS, false)).catch(() => fallbackToList());
     };
     rig.flyToward = (i) => {
       const body = bodyBuffers.positions.slice(i * 3, i * 3 + 3);
@@ -81,7 +87,7 @@ export function CameraRig() {
     };
 
     // intro: out of the dark, into the framed cosmos
-    core.framePose(FRAME_POINTS, camera.fov).then((to) => play(to, INTRO_MS, true, INTRO_FROM)).catch(() => fallbackToList());
+    core.framePose(framePoints(aspect()), camera.fov).then((to) => play(to, INTRO_MS, true, INTRO_FROM)).catch(() => fallbackToList());
 
     return () => {
       st.token++;
@@ -112,5 +118,5 @@ export function CameraRig() {
     }
   });
 
-  return <CameraControls ref={controls} makeDefault dampingFactor={0.08} minDistance={8} maxDistance={900} />;
+  return <CameraControls ref={controls} makeDefault dampingFactor={0.08} minDistance={MIN_CAM_DISTANCE} maxDistance={900} />;
 }

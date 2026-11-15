@@ -85,3 +85,13 @@ fn empty_and_single_body_do_not_panic() {
     assert_eq!(s.positions().len(), 3);
     assert!(s.positions().iter().all(|v| v.is_finite()));
 }
+
+#[test]
+fn outer_bodies_use_the_wider_orbits_and_stay_within_the_framed_extent() {
+    let l = settle(1);
+    let p = l.positions();
+    let r = |i: usize| (p[i * 3].powi(2) + p[i * 3 + 1].powi(2) + p[i * 3 + 2].powi(2)).sqrt();
+    let max = (0..9).map(r).fold(0.0_f32, f32::max);
+    assert!(max > 78.0, "outermost body at {max}; was about 63 before the wider orbits");
+    assert!(max < 105.0, "outermost body at {max} leaves the framed extent");
+}
