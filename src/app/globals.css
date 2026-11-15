@@ -63,3 +63,10 @@ a{ color:inherit }
 @media (prefers-reduced-motion:reduce){
   .welcome, .repo-list li, .role-tags button, .btn{ transition:none }
 }
+
+.hover-label{
+  position:fixed; z-index:3; left:var(--px, 50%); top:var(--py, 88%); transform:translate(14px, 14px);
+  max-width:min(320px, 80vw); padding:8px 12px; border-radius:10px; font-size:13px; line-height:1.35;
+  background:rgba(8,10,30,.88); border:1px solid var(--line); pointer-events:none; backdrop-filter:blur(6px);
+}
+.hover-label span{ color:var(--soft) }

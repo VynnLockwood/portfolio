@@ -6,6 +6,7 @@ import { fallbackToList } from "../store/useUniverse";
 import { perf } from "./e2e";
 import { Bodies } from "./Bodies";
 import { CameraRig } from "./CameraRig";
+import { Interaction } from "./Interaction";
 import { Space } from "./space/Space";
 import { Sun } from "./Sun";
 import { Warp } from "./Warp";
@@ -52,6 +53,7 @@ export default function Universe() {
       <Sun />
       <Bodies />
       <CameraRig />
+      <Interaction />
       <Warp />
       <FpsProbe />
     </Canvas>
