@@ -19,8 +19,8 @@ const list = repos as Repo[];
 const SAMPLES = 120;
 const INTRO_MS = 2200, FLY_MS = 1100, BACK_MS = 900, REDUCED_MS = 300;
 const IDLE_AFTER_MS = 20000, IDLE_DEG_PER_S = 0.6;
-/** Layout orbits stay within ORBIT_MIN + ORBIT_SPAN = 115 units of the sun, so framing uses that fixed extent. */
-const FRAME_POINTS = new Float32Array([-115, 0, 0, 115, 0, 0, 0, 60, 0]);
+/** Layout orbits stay within settle within about 85 units of the sun (radius up to 6 on top), so framing uses a fixed extent of 105. */
+const FRAME_POINTS = new Float32Array([-105, 0, 0, 105, 0, 0, 0, 55, 0]);
 const INTRO_FROM = new Float32Array([0, 200, 1400, 0, 0, 0]);
 
 /** Camera moves: Rust samples each path once (worker), this plays it back with an array read per frame. */

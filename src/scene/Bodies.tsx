@@ -10,8 +10,8 @@ import { fallbackToList, useUniverse } from "../store/useUniverse";
 
 const list = repos as Repo[];
 
-/** Biggest body (rank 1) is 4.0 world units across its radius, smallest (rank 9) is 1.5. */
-export const bodyRadius = (rank: number): number => 4.0 - (rank - 1) * (2.5 / 8);
+/** Biggest body (rank 1) has radius 6.0 world units, smallest (rank 9) 2.25. */
+export const bodyRadius = (rank: number): number => 6.0 - (rank - 1) * (3.75 / 8);
 
 /** Same formula the Rust layout tests use; higher weight orbits closer to the sun. */
 export const bodyWeight = (rank: number): number => 1 - 0.07 * (rank - 1);
