@@ -70,3 +70,21 @@ a{ color:inherit }
   background:rgba(8,10,30,.88); border:1px solid var(--line); pointer-events:none; backdrop-filter:blur(6px);
 }
 .hover-label span{ color:var(--soft) }
+
+/* 3D view: name tags and the zoom/spin hint */
+.body-labels{ position:fixed; inset:0; z-index:2; pointer-events:none; overflow:hidden }
+.body-label{
+  position:absolute; left:0; top:0; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  font-size:12px; font-weight:560; letter-spacing:.01em; color:#EAF0FF; background:rgba(10,12,30,.8);
+  border:1px solid var(--line); padding:3px 9px 3px 7px; border-radius:999px; will-change:transform; transition:opacity .35s;
+}
+.body-label i{ width:7px; height:7px; border-radius:50% }
+.body-label[data-hidden="true"]{ opacity:0 }
+.body-label[data-dim="true"]{ opacity:.3 }
+.hint{
+  position:fixed; z-index:2; left:50%; bottom:56px; transform:translateX(-50%); pointer-events:none; text-align:center;
+  font-size:13px; color:#C9D3F5; background:rgba(8,10,30,.8); border:1px solid var(--line); padding:8px 16px; border-radius:999px;
+  transition:opacity .8s ease; max-width:calc(100vw - 32px);
+}
+.hint[data-state="hidden"], .hint[data-state="gone"]{ opacity:0 }
+@media (prefers-reduced-motion:reduce){ .hint, .body-label{ transition:none } }

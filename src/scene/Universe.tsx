@@ -7,6 +7,7 @@ import { E2E, hook, perf } from "./e2e";
 import { Bodies } from "./Bodies";
 import { CameraRig } from "./CameraRig";
 import { Interaction } from "./Interaction";
+import { LabelDriver } from "./Labels";
 import { Space, useTier } from "./space/Space";
 import { renderDpr } from "./quality";
 import { Sun } from "./Sun";
@@ -87,6 +88,7 @@ export default function Universe() {
       <CameraRig />
       <Interaction />
       <Warp />
+      <LabelDriver />
       <FpsProbe />
     </Canvas>
   );

@@ -4,7 +4,9 @@ import repos from "../data/repos.json";
 import type { Repo } from "../data/types";
 import { rig } from "../scene/rigRef";
 import { useUniverse } from "../store/useUniverse";
+import { BodyLabels } from "../scene/Labels";
 import { Header } from "./Header";
+import { Hint } from "./Hint";
 import { RepoList } from "./RepoList";
 import { chooseInitialView, hasWebGL, useReducedMotion } from "./view";
 import { Welcome } from "./Welcome";
@@ -47,11 +49,15 @@ export function Shell() {
   return (
     <div className="shell" data-view={view} data-reduced={reducedMotion}>
       {view === "3d" && (
-        <div className="stage">
-          <Suspense fallback={null}>
-            <Universe />
-          </Suspense>
-        </div>
+        <>
+          <div className="stage">
+            <Suspense fallback={null}>
+              <Universe />
+            </Suspense>
+          </div>
+          <BodyLabels />
+          <Hint />
+        </>
       )}
       <div className="content">
         <Header />
