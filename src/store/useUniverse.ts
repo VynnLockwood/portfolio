@@ -8,10 +8,13 @@ export interface UniverseState {
   hovered: string | null;
   tier: Tier | "auto";
   notice: string | null;
+  /** true while the camera plays a fly-in */
+  flying: boolean;
   setRole(r: Role | null): void;
   setView(v: "3d" | "list"): void;
   setHovered(id: string | null): void;
   setNotice(m: string | null): void;
+  setFlying(f: boolean): void;
 }
 
 export const useUniverse = create<UniverseState>((set) => ({
@@ -20,10 +23,12 @@ export const useUniverse = create<UniverseState>((set) => ({
   hovered: null,
   tier: "auto",
   notice: null,
+  flying: false,
   setRole: (role) => set({ role }),
   setView: (view) => set({ view }),
   setHovered: (hovered) => set({ hovered }),
   setNotice: (notice) => set({ notice }),
+  setFlying: (flying) => set({ flying }),
 }));
 
 export const FALLBACK_NOTICE = "3D could not start, showing the list instead.";

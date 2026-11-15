@@ -5,8 +5,10 @@ import { disposeCore, whenCoreReady } from "../engine/coreClient";
 import { fallbackToList } from "../store/useUniverse";
 import { perf } from "./e2e";
 import { Bodies } from "./Bodies";
+import { CameraRig } from "./CameraRig";
 import { Space } from "./space/Space";
 import { Sun } from "./Sun";
+import { Warp } from "./Warp";
 
 function FpsProbe() {
   useFrame((_, dt) => {
@@ -49,6 +51,8 @@ export default function Universe() {
       <Space />
       <Sun />
       <Bodies />
+      <CameraRig />
+      <Warp />
       <FpsProbe />
     </Canvas>
   );

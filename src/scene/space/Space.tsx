@@ -19,8 +19,9 @@ export function useTier(): Tier {
   return setting === "auto" ? auto : setting;
 }
 
-export function Space({ flying = false }: { flying?: boolean }) {
+export function Space() {
   const tier = useTier();
+  const flying = useUniverse((s) => s.flying);
   return (
     <>
       <Nebula size={TIERS[tier].cubemap} />
