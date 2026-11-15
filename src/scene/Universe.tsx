@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { disposeCore, whenCoreReady } from "../engine/coreClient";
 import { fallbackToList } from "../store/useUniverse";
 import { perf } from "./e2e";
+import { Bodies } from "./Bodies";
 import { Space } from "./space/Space";
+import { Sun } from "./Sun";
 
 function FpsProbe() {
   useFrame((_, dt) => {
@@ -45,6 +47,8 @@ export default function Universe() {
     >
       <color attach="background" args={["#05060F"]} />
       <Space />
+      <Sun />
+      <Bodies />
       <FpsProbe />
     </Canvas>
   );
