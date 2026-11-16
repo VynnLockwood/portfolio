@@ -13,11 +13,11 @@ function run(mix: number[], target: number[], ms: number) {
 }
 
 describe("body sizing", () => {
-  it("radius is strictly decreasing with rank, from 4.0 down to 1.5", () => {
+  it("radius is strictly decreasing with rank, from 6.0 down to 2.25", () => {
     const r = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(bodyRadius);
     for (let i = 1; i < r.length; i++) expect(r[i]).toBeLessThan(r[i - 1]);
-    expect(r[0]).toBeCloseTo(4.0);
-    expect(r[8]).toBeCloseTo(1.5);
+    expect(r[0]).toBeCloseTo(6.0);
+    expect(r[8]).toBeCloseTo(2.25);
   });
   it("weight follows 1 - 0.07 * (rank - 1), the same formula the Rust layout tests use", () => {
     expect(bodyWeight(1)).toBe(1);

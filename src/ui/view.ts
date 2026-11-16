@@ -16,16 +16,8 @@ export function useReducedMotion(): boolean {
   return reduced;
 }
 
-export interface ViewEnv {
-  webgl: boolean;
-  width: number;
-  reducedMotion: boolean;
-}
-
-/** List view for no-WebGL, very small screens (< 480 px) and reduced-motion visitors; 3D otherwise. */
-export function chooseInitialView(env: ViewEnv): "3d" | "list" {
-  return !env.webgl || env.width < 480 || env.reducedMotion ? "list" : "3d";
-}
+/** Everyone starts in the list view: fast, readable, works everywhere. 3D is opt-in through the "Explore in 3D" button. */
+export const INITIAL_VIEW = "list" as const;
 
 export function hasWebGL(): boolean {
   try {

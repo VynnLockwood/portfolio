@@ -8,6 +8,7 @@ export default defineConfig({
   workers: 1,
   use: {
     baseURL: `http://localhost:${PORT}`,
+    viewport: { width: 800, height: 450 }, // software GL is fill-bound; a small window keeps the e2e runs quick
     launchOptions: {
       // CHROMIUM_PATH picks a specific browser; SwiftShader gives headless Chrome a software WebGL
       executablePath: process.env.CHROMIUM_PATH || undefined,
